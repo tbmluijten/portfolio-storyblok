@@ -71,6 +71,7 @@ export default {
         cv: +new Date()
       })
       .then((res) => {
+        console.log(res.data.story.content)
         return res.data;
       })
       .catch((res) => {

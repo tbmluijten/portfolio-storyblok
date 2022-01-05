@@ -1,6 +1,6 @@
 body,
 html {
-  font-family: $fontstack;
+  font-family: $font;
 }
 
 h1,
@@ -8,9 +8,29 @@ h2,
 h3,
 h4,
 h5 {
-  font-family: $headingstack;
+  font-family: $font;
 }
 
 p {
-  font-family: $fontstack;
+  font-family: $font;
+}
+
+h1{
+  font-size: 96px;
+  font-weight: bold;
+  color: white;
+  margin: 0;
+  line-height: 1;
+  @include tablet-down{
+    font-size: 48px;
+  }
+}
+
+h2{
+  color: #222;
+  font-size: 48px;
+  line-height: 1;
+  margin: 0;
+  font-weight: bold;
+  margin-bottom: 16px;
 }
