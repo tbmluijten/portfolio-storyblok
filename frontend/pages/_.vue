@@ -4,19 +4,30 @@
       v-if="story.content.component"
       :key="story.content._uid"
       :blok="story.content"
-      :is="story.content.component"
-    />
+      :is="story.content.component" />
   </section>
 </template>
 
  
 <script>
-import StoryblokClient from "storyblok-js-client";
+import StoryblokClient from 'storyblok-js-client';
 
 export default {
   data() {
     return {
       story: { content: {} },
+    };
+  },
+  head() {
+    return {
+      title: 'Tom Luijten',
+      meta: [
+        // hid is used as unique identifier. Do not use `vmid` for it as it will not work
+        {
+          name: 'Tom Luijten portfolio',
+          content: 'Welcome to my portfolio page!',
+        },
+      ],
     };
   },
   mounted() {
@@ -25,15 +36,15 @@ export default {
       const storyblokInstance = new StoryblokBridge();
 
       // Use the input event for instant update of content
-      storyblokInstance.on("input", (event) => {
-        console.log(this.story.content);
+      storyblokInstance.on('input', (event) => {
+        // console.log(this.story);
         if (event.story.id === this.story.id) {
           this.story.content = event.story.content;
         }
       });
 
       // Use the bridge to listen the events
-      storyblokInstance.on(["published", "change"], (event) => {
+      storyblokInstance.on(['published', 'change'], (event) => {
         this.$nuxt.$router.go({
           path: this.$nuxt.$router.currentRoute,
           force: true,
@@ -52,26 +63,22 @@ export default {
       accessToken: process.env.STORYBLOK_TOKEN,
       cache: {
         clear: 'auto',
-        type: 'memory'
-      }
-    })
+        type: 'memory',
+      },
+    });
 
     // 2. extra flushCache
-    Storyblok.flushCache()
+    Storyblok.flushCache();
 
     // Use full slug path from Storyblok CMS pages
-    const fullSlug =
-      context.route.path == "/" || context.route.path == ""
-        ? "home"
-        : context.route.path;
+    const fullSlug = context.route.path == '/' || context.route.path == '' ? 'home' : context.route.path;
 
-    return Storyblok
-      .get(`cdn/stories/${fullSlug}`, {
-        version: process.env.STORYBLOK_CONTENT_STATUS, // Set DEV of PROD version (untested)
-        cv: +new Date()
-      })
+    return Storyblok.get(`cdn/stories/${fullSlug}`, {
+      version: process.env.STORYBLOK_CONTENT_STATUS, // Set DEV of PROD version (untested)
+      cv: +new Date(),
+    })
       .then((res) => {
-        console.log(res.data.story.content)
+        console.log(res.data.story.content);
         return res.data;
       })
       .catch((res) => {
@@ -79,7 +86,7 @@ export default {
           console.error(res);
           context.error({
             statusCode: 404,
-            message: "Failed to receive content form api",
+            message: 'Failed to receive content form api',
           });
         } else {
           console.error(res.response.data);

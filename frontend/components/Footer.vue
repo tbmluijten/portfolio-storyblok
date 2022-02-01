@@ -18,7 +18,7 @@ export default {};
 footer {
   background-color: rgba(0, 0, 0, 1);
   padding: 24px 0px;
-  @includet tablet-up {
+  @include tablet-up {
     padding: 48px 0px;
   }
   .container {

@@ -1,9 +1,6 @@
+const axios = require('axios')
 export default {
   // Target: https://go.nuxtjs.dev/config-target
-  server: {
-    host: "0.0.0.0" // default: localhost
-  },
-
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
     title: "livewall-nuxt-boilerplate",
@@ -25,7 +22,6 @@ export default {
   plugins: [
     { src: "~/plugins/vue-composition.js", mode: "all" },
     { src: "~/plugins/vue-richtext.js", mode: "all" },
-    { src: "~/plugins/vue-imagepreview.js", mode: "all" }
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -66,7 +62,44 @@ export default {
   axios: {},
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
-  build: {}
+  build: {},
+
+  generate: {
+
+    routes: function(callback) {
+      const token = `QlTNClnPm8udHodWOpWDvwtt`;
+      const version = "draft";
+      let cache_version = 0;
+
+      let toIgnore = ["home"];
+
+      // other routes that are not in Storyblok with their slug.
+      let routes = ["/"]; // adds / directly
+
+      // Load space and receive latest cache version key to improve performance
+      axios
+        .get(`https://api.storyblok.com/v1/cdn/spaces/me?token=${token}`)
+        .then(space_res => {
+          // timestamp of latest publish
+          cache_version = space_res.data.space.version;
+
+          // Call for all Links using the Links API: https://www.storyblok.com/docs/Delivery-Api/Links
+          axios
+            .get(
+              `https://api.storyblok.com/v1/cdn/links?token=${token}&version=${version}&cv=${cache_version}&per_page=100`
+            )
+            .then(res => {
+              Object.keys(res.data.links).forEach(key => {
+                if (!toIgnore.includes(res.data.links[key].slug)) {
+                  routes.push("/" + res.data.links[key].slug);
+                }
+              });
+
+              callback(null, routes);
+            });
+        });
+    }
+  }
 
   // https://nuxtjs.org/docs/2.x/configuration-glossary/configuration-servermiddleware
   // serverMiddleware: [
